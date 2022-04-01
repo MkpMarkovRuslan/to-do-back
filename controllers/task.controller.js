@@ -5,19 +5,16 @@ const getAllTasks = async (req, res) => {
     const tasks = await Task.findAll();
     return res.status(200).send(tasks);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(500).send(error);
   }
 };
 
 const createTask = async (req, res) => {
   try {
-    const task = await Task.create({
-      text: req.body.text,
-      ischeck: req.body.ischeck,
-    });
+    const task = await Task.create(req.body);
     return res.status(201).send(task);
   } catch (error) {
-    return res.status(400).send(error);
+    return res.status(500).send(error);
   }
 };
 
@@ -26,19 +23,7 @@ const updateTask = async (req, res) => {
   if (body.hasOwnProperty("id") && body.hasOwnProperty("text")) {
     Task.update(
       {
-        text: body.text,
-      },
-      {
-        where: {
-          id: body.id,
-        },
-      }
-    );
-    res.send(body);
-  } else if (body.hasOwnProperty("id") && body.hasOwnProperty("ischeck")) {
-    Task.update(
-      {
-        ischeck: body.ischeck,
+        body,
       },
       {
         where: {
@@ -61,7 +46,7 @@ const deleteTask = async (req, res) => {
       },
     })
       .then(() => res.status(204).send())
-      .catch((error) => res.status(400).send(error));
+      .catch((error) => res.status(500).send(error));
   } else {
     res.status(422).send("Error! Params not correct");
   }
